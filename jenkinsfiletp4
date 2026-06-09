@@ -115,7 +115,17 @@ pipeline {
             }
         }
 
-        stage('06 - DEPLOY') {
+        stage('06 - TRIVY IMAGE SCAN') {
+            steps {
+                echo "Scanning Docker image with Trivy"
+
+                bat """
+                trivy image --severity HIGH,CRITICAL %DOCKER_IMAGE%:latest
+                """
+            }
+        }
+
+        stage('07 - DEPLOY') {
             steps {
                 echo "Deploying Application"
 
