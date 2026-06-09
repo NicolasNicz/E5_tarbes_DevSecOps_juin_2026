@@ -63,6 +63,14 @@ pipeline {
             }
         }
 
+        stage('DEBUG JAVA') {
+            steps {
+                bat 'java -version'
+                bat 'javac -version'
+                bat 'where java'
+            }
+        }
+
         stage('03 - BUILD APPLICATION') {
             steps {
                 echo "Building Application"
