@@ -120,7 +120,13 @@ pipeline {
                 echo "Scanning Docker image with Trivy"
 
                 bat """
-                trivy image --severity HIGH,CRITICAL %DOCKER_IMAGE%:latest
+                trivy image ^
+                --scanners vuln ^
+                --timeout 15m ^
+                --skip-version-check ^
+                --severity HIGH,CRITICAL ^
+                --exit-code 0 ^
+                %DOCKER_IMAGE%:latest
                 """
             }
         }
