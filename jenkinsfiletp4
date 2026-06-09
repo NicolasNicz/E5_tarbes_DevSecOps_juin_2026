@@ -153,7 +153,7 @@ pipeline {
                     bat """
                     %SNYK_EXE% auth %SNYK_TOKEN%
                     docker save %DOCKER_IMAGE%:latest -o %APP_NAME%.tar
-                    %SNYK_EXE% container test --file=%APP_NAME%.tar --severity-threshold=high || exit /b 0
+                    %SNYK_EXE% container test docker-archive://%APP_NAME%.tar --severity-threshold=high || exit /b 0
                     del %APP_NAME%.tar
                     """
                 }
