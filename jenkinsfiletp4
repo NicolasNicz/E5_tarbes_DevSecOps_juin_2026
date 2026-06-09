@@ -141,20 +141,22 @@ pipeline {
         //     }
         // }
 
-        stage('06 - SNYK IMAGE SCAN') {
+        stage('06 - SNYK DEPENDENCY SCAN') {
             when {
                 expression {
                     return params.SKIP_TEST == false
                 }
             }
             steps {
-                echo "Analyse de l'image Docker avec Snyk..."
+                echo "Analyse des dépendances Maven avec Snyk..."
 
-                withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
-                    bat """
-                    %SNYK_EXE% auth %SNYK_TOKEN%
-                    %SNYK_EXE% container test %DOCKER_IMAGE%:latest --platform=linux/amd64 --severity-threshold=high || exit /b 0
-                    """
+                dir("${APP_DIR}") {
+                    withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
+                        bat """
+                        %SNYK_EXE% auth %SNYK_TOKEN%
+                        %SNYK_EXE% test --severity-threshold=high || exit /b 0
+                        """
+                    }
                 }
             }
         }
