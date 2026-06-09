@@ -156,6 +156,7 @@ pipeline {
                     %SNYK_EXE% container test --file=%APP_NAME%.tar --severity-threshold=high || exit /b 0
                     del %APP_NAME%.tar
                     """
+                }
             }
         }
 
