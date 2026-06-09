@@ -153,12 +153,12 @@ pipeline {
                 withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
                     bat """
                     %SNYK_EXE% auth %SNYK_TOKEN%
-                    %SNYK_EXE% container test %DOCKER_IMAGE%:latest --severity-threshold=high || exit /b 0
+                    %SNYK_EXE% container test %DOCKER_IMAGE%:latest --platform=linux/amd64 --severity-threshold=high || exit /b 0
                     """
                 }
             }
         }
-        
+
         stage('07 - DEPLOY') {
             steps {
                 echo "Deploying Application"
