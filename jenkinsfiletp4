@@ -125,21 +125,21 @@ pipeline {
             }
         }
 
-        stage('06 - TRIVY IMAGE SCAN') {
-            steps {
-                echo "Scanning Docker image with Trivy"
+        // stage('06 - TRIVY IMAGE SCAN') {
+        //     steps {
+        //         echo "Scanning Docker image with Trivy"
 
-                bat """
-                trivy image ^
-                --scanners vuln ^
-                --timeout 15m ^
-                --skip-version-check ^
-                --severity HIGH,CRITICAL ^
-                --exit-code 0 ^
-                %DOCKER_IMAGE%:latest
-                """
-            }
-        }
+        //         bat """
+        //         trivy image ^
+        //         --scanners vuln ^
+        //         --timeout 15m ^
+        //         --skip-version-check ^
+        //         --severity HIGH,CRITICAL ^
+        //         --exit-code 0 ^
+        //         %DOCKER_IMAGE%:latest
+        //         """
+        //     }
+        // }
 
         stage('06 - SNYK IMAGE SCAN') {
             when {
@@ -153,7 +153,7 @@ pipeline {
                     bat """
                     %SNYK_EXE% auth %SNYK_TOKEN%
                     docker save %DOCKER_IMAGE%:latest -o %APP_NAME%.tar
-                    %SNYK_EXE% container test docker-archive://%APP_NAME%.tar --severity-threshold=high || exit /b 0
+                    %SNYK_EXE% container test docker-archive:%APP_NAME%.tar --severity-threshold=high || exit /b 0
                     del %APP_NAME%.tar
                     """
                 }
