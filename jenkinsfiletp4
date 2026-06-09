@@ -149,12 +149,16 @@ pipeline {
             }
             steps {
                 echo "Analyse de l'image Docker avec Snyk via archive Docker..."
+
                 withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
                     bat """
                     %SNYK_EXE% auth %SNYK_TOKEN%
-                    docker save %DOCKER_IMAGE%:latest -o %APP_NAME%.tar
-                    %SNYK_EXE% container test docker-archive:%APP_NAME%.tar --severity-threshold=high || exit /b 0
-                    del %APP_NAME%.tar
+
+                    docker save -o %WORKSPACE%\\%APP_NAME%.tar %DOCKER_IMAGE%:latest
+
+                    %SNYK_EXE% container test docker-archive:%WORKSPACE%\\%APP_NAME%.tar --severity-threshold=high || exit /b 0
+
+                    del %WORKSPACE%\\%APP_NAME%.tar
                     """
                 }
             }
