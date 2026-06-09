@@ -37,6 +37,7 @@ pipeline {
         APP_NAME = "demo-app"
         DOCKER_IMAGE = "demo-app"
         APP_DIR = "demo-app"
+        SNYK_EXE = "C:\\ProgramData\\chocolatey\\bin\\snyk.exe"
     }
 
     stages {
@@ -69,6 +70,15 @@ pipeline {
                 bat 'java -version'
                 bat 'javac -version'
                 bat 'where java'
+            }
+        }
+
+        stage('DEBUG SNYK') {
+            steps {
+                bat """
+                echo Snyk version:
+                %SNYK_EXE% -version
+                """
             }
         }
 
@@ -128,6 +138,24 @@ pipeline {
                 --exit-code 0 ^
                 %DOCKER_IMAGE%:latest
                 """
+            }
+        }
+
+        stage('06 - SNYK IMAGE SCAN') {
+            when {
+                expression {
+                    return params.SKIP_TEST == false
+                }
+            }
+            steps {
+                echo "Analyse de l'image Docker avec Snyk via archive Docker..."
+                withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
+                    bat """
+                    %SNYK_EXE% auth %SNYK_TOKEN%
+                    docker save %DOCKER_IMAGE%:latest -o %APP_NAME%.tar
+                    %SNYK_EXE% container test --file=%APP_NAME%.tar --severity-threshold=high
+                    del %APP_NAME%.tar
+                    """
             }
         }
 
