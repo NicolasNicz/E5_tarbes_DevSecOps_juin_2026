@@ -51,14 +51,14 @@ pipeline {
                 ${params.DESC}
                 """
 
-                echo "Branch Selected : ${params.BRANCH}"
+                echo "Branche séléctionnée : ${params.BRANCH}"
                 echo "Skip Test : ${params.SKIP_TEST}"
             }
         }
 
         stage('02 - CHECKOUT GITHUB') {
             steps {
-                echo "Downloading source code..."
+                echo "Téléchargement du code source..."
 
                 git branch: "${params.BRANCH}",
                     url: 'https://github.com/NicolasNicz/E5_tarbes_DevSecOps_juin_2026.git'
@@ -125,21 +125,21 @@ pipeline {
             }
         }
 
-        // stage('06 - TRIVY IMAGE SCAN') {
-        //     steps {
-        //         echo "Scanning Docker image with Trivy"
+        stage('06 - TRIVY IMAGE SCAN') {
+            steps {
+                echo "Scan de l'image Docker avec Trivy"
 
-        //         bat """
-        //         trivy image ^
-        //         --scanners vuln ^
-        //         --timeout 15m ^
-        //         --skip-version-check ^
-        //         --severity HIGH,CRITICAL ^
-        //         --exit-code 0 ^
-        //         %DOCKER_IMAGE%:latest
-        //         """
-        //     }
-        // }
+                bat """
+                trivy image ^
+                --scanners vuln ^
+                --timeout 15m ^
+                --skip-version-check ^
+                --severity HIGH,CRITICAL ^
+                --exit-code 0 ^
+                %DOCKER_IMAGE%:latest
+                """
+            }
+        }
 
         stage('06 - SNYK DEPENDENCY SCAN') {
             when {
@@ -163,7 +163,7 @@ pipeline {
 
         stage('07 - DEPLOY') {
             steps {
-                echo "Deploying Application"
+                echo "Déploiement de l'application avec Docker"
 
                 bat """
                 docker stop %APP_NAME% || exit /b 0
